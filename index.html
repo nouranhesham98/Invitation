@@ -1,93 +1,99 @@
-</section>
-
-            <!-- Admin Access Button (Hidden in Footer) -->
-            <footer class="text-center py-6">
-                <button onclick="showAdminLogin()" class="text-[10px] text-gray-400 hover:text-gold-600 transition">
-                    <i class="fa-solid fa-lock"></i> لوحة تحكم العروسين
-                </button>
-            </footer>
-        </div>
-    </main>
-
-    <!-- Admin Overlay -->
-    <div id="admin-overlay" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white p-6 rounded-2xl w-full max-w-sm text-center">
-            <h3 class="font-bold text-darkGreen mb-4">دخول لوحة التحكم</h3>
-            <input type="password" id="admin-pass" placeholder="كلمة المرور" class="w-full px-3 py-2 border rounded-lg mb-4 text-center">
-            <div class="flex gap-2">
-                <button onclick="closeAdmin()" class="flex-1 py-2 bg-gray-200 rounded-lg">إغلاق</button>
-                <button onclick="checkAdmin()" class="flex-1 py-2 bg-gold-600 text-white rounded-lg">دخول</button>
-            </div>
-            <div id="admin-dashboard" class="hidden mt-6 space-y-4 text-right">
-                <div class="bg-gray-50 p-3 rounded-lg"><span class="font-bold">إجمالي الحضور:</span> <span id="stat-attending">0</span></div>
-                <div class="bg-gray-50 p-3 rounded-lg"><span class="font-bold">إجمالي المعتذرين:</span> <span id="stat-declining">0</span></div>
-                <div class="bg-gray-50 p-3 rounded-lg"><span class="font-bold">عدد المرافقين المتوقع:</span> <span id="stat-guests">0</span></div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        
-        function showAdminLogin() { document.getElementById('admin-overlay').classList.remove('hidden'); }
-        function closeAdmin() { document.getElementById('admin-overlay').classList.add('hidden'); }
-        
-        async function checkAdmin() {
-            const pass = document.getElementById('admin-pass').value;
-            if(pass === "1234") { // يمكنك تغيير كلمة المرور هنا
-                document.getElementById('admin-dashboard').classList.remove('hidden');
-                // جلب البيانات
-                const response = await fetch(GOOGLE_SCRIPT_URL + "?action=getStats");
-                const data = await response.json();
-                document.getElementById('stat-attending').innerText = data.attending;
-                document.getElementById('stat-declining').innerText = data.declining;
-                document.getElementById('stat-guests').innerText = data.guests;
-            } else {
-                alert("كلمة مرور خاطئة!");
-            }
-        }
-    </script>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دعوة زفاف - Mostafa & Nouran</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Amiri&family=Cairo:wght@300;400;700&display=swap" rel="stylesheet">
+    
     <style>
         body { font-family: 'Cairo', sans-serif; background-color: #f3efe6; color: #3b3a36; overflow-x: hidden; }
-        .watercolor-bg { background-color: #f7f4ee; background-image: radial-gradient(circle at top, rgba(255, 255, 255, 0.9) 0%, rgba(247, 244, 238, 0.7) 100%); }
-        .card-frame { border: 2px solid #d4be93; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-        .petal { position: absolute; background-color: #dbe4dc; border-radius: 10px 0 10px 0; pointer-events: none; animation: floatPetal 10s linear infinite; }
-        @keyframes floatPetal { 0% { transform: translateY(-10px) rotate(0deg); opacity: 0.8; } 100% { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
+        .watercolor-bg { background: #f7f4ee; background-image: radial-gradient(circle at top, rgba(255,255,255,0.9), rgba(247,244,238,0.7)); }
+        .card-frame { border: 2px solid #d4be93; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); }
+        .font-script { font-family: 'Alex Brush', cursive; }
+        .font-classic { font-family: 'Amiri', serif; }
     </style>
 </head>
-<body class="watercolor-bg min-h-screen relative flex justify-center items-center p-4">
+<body class="watercolor-bg min-h-screen flex justify-center items-center p-4">
 
-    <main class="w-full max-w-md bg-white/90 shadow-2xl rounded-2xl p-6 space-y-6 relative z-20">
+    <main class="w-full max-w-md bg-white/90 shadow-2xl rounded-2xl p-6 space-y-6 relative z-10 border border-gold-300">
         <section class="card-frame p-6 text-center rounded-lg">
-            <h1 class="font-script text-5xl text-gold-700 font-bold">Mostafa</h1>
-            <div class="my-2 text-gold-500 font-script text-2xl">&</div>
-            <h1 class="font-script text-5xl text-gold-700 font-bold">Nouran</h1>
+            <h1 class="font-script text-5xl text-yellow-700 font-bold">Mostafa</h1>
+            <div class="my-2 text-yellow-500 font-script text-2xl">&</div>
+            <h1 class="font-script text-5xl text-yellow-700 font-bold">Nouran</h1>
             <div class="mt-6 border-t pt-4">
-                <div class="text-xs text-gray-500 mb-1"><i class="fa-solid fa-location-dot text-gold-600"></i> المكان</div>
-                <a href="#" class="block font-bold text-lg text-darkGreen underline">Katameya Gardens</a>
+                <div class="text-xs text-gray-500 mb-1"><i class="fa-solid fa-location-dot text-yellow-600"></i> المكان</div>
+                <div class="block font-bold text-lg text-green-900">Katameya Gardens</div>
             </div>
         </section>
 
         <form id="rsvp-form" onsubmit="handleRSVP(event)" class="space-y-3">
-            <input type="text" id="guest-name" required placeholder="أدخل اسمك الكريم" class="w-full px-3 py-2 rounded-lg border border-gray-200 text-xs">
-            <button type="submit" class="w-full py-2 bg-darkGreen text-white rounded-lg font-bold">تأكيد الحضور</button>
+            <input type="text" id="guest-name" required placeholder="أدخل اسمك الكريم" class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm">
+            <select id="attendance" class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm">
+                <option value="حضور">حضور</option>
+                <option value="اعتذار">اعتذار</option>
+            </select>
+            <input type="number" id="guests-count" placeholder="عدد المرافقين" class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm">
+            <button type="submit" class="w-full py-2 bg-green-900 text-white rounded-lg font-bold">تأكيد الرد</button>
         </form>
     </main>
+
+    <footer class="fixed bottom-4 z-50">
+        <button onclick="showAdminLogin()" class="text-[10px] text-gray-400 hover:text-yellow-700 transition">
+            <i class="fa-solid fa-lock"></i> لوحة تحكم العروسين
+        </button>
+    </footer>
+
+    <div id="admin-overlay" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white p-6 rounded-2xl w-full max-w-sm text-center">
+            <h3 class="font-bold mb-4">دخول لوحة التحكم</h3>
+            <input type="password" id="admin-pass" placeholder="كلمة المرور" class="w-full px-3 py-2 border rounded-lg mb-4 text-center">
+            <div class="flex gap-2">
+                <button onclick="closeAdmin()" class="flex-1 py-2 bg-gray-200 rounded-lg">إغلاق</button>
+                <button onclick="checkAdmin()" class="flex-1 py-2 bg-yellow-600 text-white rounded-lg">دخول</button>
+            </div>
+            <div id="admin-dashboard" class="hidden mt-6 space-y-4 text-right">
+                <div class="bg-gray-100 p-3 rounded-lg text-sm">إجمالي الحضور: <span id="stat-attending" class="font-bold">0</span></div>
+                <div class="bg-gray-100 p-3 rounded-lg text-sm">إجمالي المعتذرين: <span id="stat-declining" class="font-bold">0</span></div>
+                <div class="bg-gray-100 p-3 rounded-lg text-sm">عدد المرافقين: <span id="stat-guests" class="font-bold">0</span></div>
+            </div>
+        </div>
+    </div>
 
     <script>
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzEsSLKxLLX6JAtVqYPqtJ4p2xOMKw0d1_I7a5tgsJ1ZSPWwo5G9ffSxEjOugQA0tc/exec";
 
         async function handleRSVP(e) {
             e.preventDefault();
-            const name = document.getElementById('guest-name').value;
+            const data = {
+                type: 'rsvp',
+                name: document.getElementById('guest-name').value,
+                attendance: document.getElementById('attendance').value,
+                guests: document.getElementById('guests-count').value || 0,
+                date: new Date().toLocaleString()
+            };
             try {
-                await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify({ type: 'rsvp', name: name, date: new Date().toLocaleString() })
-                });
+                await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
                 alert("تم إرسال ردك بنجاح!");
-            } catch (error) {
-                alert("حدث خطأ، يرجى المحاولة لاحقاً.");
+            } catch (err) { alert("حدث خطأ"); }
+        }
+
+        function showAdminLogin() { document.getElementById('admin-overlay').classList.remove('hidden'); }
+        function closeAdmin() { document.getElementById('admin-overlay').classList.add('hidden'); }
+        
+        async function checkAdmin() {
+            const pass = document.getElementById('admin-pass').value;
+            if(pass === "1234") {
+                const response = await fetch(GOOGLE_SCRIPT_URL + "?action=getStats");
+                const data = await response.json();
+                document.getElementById('stat-attending').innerText = data.attending;
+                document.getElementById('stat-declining').innerText = data.declining;
+                document.getElementById('stat-guests').innerText = data.guests;
+                document.getElementById('admin-dashboard').classList.remove('hidden');
+            } else {
+                alert("كلمة مرور خاطئة!");
             }
         }
     </script>
