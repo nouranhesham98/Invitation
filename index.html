@@ -4,96 +4,61 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>دعوة زفاف - Mostafa & Nouran</title>
+    <!-- تحميل Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Amiri&family=Cairo:wght@300;400;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&family=Alex+Brush&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Cairo', sans-serif; background-color: #f3efe6; color: #3b3a36; overflow-x: hidden; }
-        .watercolor-bg { background: #f7f4ee; background-image: radial-gradient(circle at top, rgba(255,255,255,0.9), rgba(247,244,238,0.7)); }
-        .card-frame { border: 2px solid #d4be93; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); }
-        .font-script { font-family: 'Alex Brush', cursive; }
-        .font-classic { font-family: 'Amiri', serif; }
+        body { font-family: 'Cairo', sans-serif; background-color: #f3efe6; }
+        .hidden-admin { display: none; }
+        .card-style { background: white; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 20px; text-align: center; }
     </style>
 </head>
-<body class="watercolor-bg min-h-screen flex justify-center items-center p-4">
+<body class="p-4 flex flex-col items-center justify-center min-h-screen">
 
-    <main class="w-full max-w-md bg-white/90 shadow-2xl rounded-2xl p-6 space-y-6 relative z-10 border border-gold-300">
-        <section class="card-frame p-6 text-center rounded-lg">
-            <h1 class="font-script text-5xl text-yellow-700 font-bold">Mostafa</h1>
-            <div class="my-2 text-yellow-500 font-script text-2xl">&</div>
-            <h1 class="font-script text-5xl text-yellow-700 font-bold">Nouran</h1>
-            <div class="mt-6 border-t pt-4">
-                <div class="text-xs text-gray-500 mb-1"><i class="fa-solid fa-location-dot text-yellow-600"></i> المكان</div>
-                <div class="block font-bold text-lg text-green-900">Katameya Gardens</div>
-            </div>
-        </section>
-
-        <form id="rsvp-form" onsubmit="handleRSVP(event)" class="space-y-3">
-            <input type="text" id="guest-name" required placeholder="أدخل اسمك الكريم" class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm">
-            <select id="attendance" class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm">
-                <option value="حضور">حضور</option>
-                <option value="اعتذار">اعتذار</option>
-            </select>
-            <input type="number" id="guests-count" placeholder="عدد المرافقين" class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm">
-            <button type="submit" class="w-full py-2 bg-green-900 text-white rounded-lg font-bold">تأكيد الرد</button>
+    <!-- كارت الدعوة الرئيسي -->
+    <main class="card-style w-full max-w-sm">
+        <h1 class="text-5xl font-bold text-yellow-700 font-script">Mostafa</h1>
+        <div class="text-2xl text-yellow-500 my-2">&</div>
+        <h1 class="text-5xl font-bold text-yellow-700 font-script">Nouran</h1>
+        <p class="mt-4 text-lg">يسعدنا حضوركم في</p>
+        <div class="font-bold text-green-900 text-xl">Katameya Gardens</div>
+        
+        <form id="rsvp-form" class="mt-6 space-y-3">
+            <input type="text" id="guest-name" placeholder="أدخل اسمك الكريم" class="w-full p-2 border rounded-lg text-right">
+            <button type="submit" class="w-full bg-green-900 text-white p-2 rounded-lg font-bold">تأكيد الحضور</button>
         </form>
     </main>
 
-    <footer class="fixed bottom-4 z-50">
-        <button onclick="showAdminLogin()" class="text-[10px] text-gray-400 hover:text-yellow-700 transition">
-            <i class="fa-solid fa-lock"></i> لوحة تحكم العروسين
-        </button>
-    </footer>
+    <!-- زر الأدمن في الأسفل -->
+    <button onclick="document.getElementById('admin-panel').classList.remove('hidden-admin')" class="mt-8 text-gray-400 text-xs underline">
+        لوحة تحكم العروسين
+    </button>
 
-    <div id="admin-overlay" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white p-6 rounded-2xl w-full max-w-sm text-center">
-            <h3 class="font-bold mb-4">دخول لوحة التحكم</h3>
-            <input type="password" id="admin-pass" placeholder="كلمة المرور" class="w-full px-3 py-2 border rounded-lg mb-4 text-center">
-            <div class="flex gap-2">
-                <button onclick="closeAdmin()" class="flex-1 py-2 bg-gray-200 rounded-lg">إغلاق</button>
-                <button onclick="checkAdmin()" class="flex-1 py-2 bg-yellow-600 text-white rounded-lg">دخول</button>
-            </div>
-            <div id="admin-dashboard" class="hidden mt-6 space-y-4 text-right">
-                <div class="bg-gray-100 p-3 rounded-lg text-sm">إجمالي الحضور: <span id="stat-attending" class="font-bold">0</span></div>
-                <div class="bg-gray-100 p-3 rounded-lg text-sm">إجمالي المعتذرين: <span id="stat-declining" class="font-bold">0</span></div>
-                <div class="bg-gray-100 p-3 rounded-lg text-sm">عدد المرافقين: <span id="stat-guests" class="font-bold">0</span></div>
-            </div>
+    <!-- لوحة الأدمن (مخفية) -->
+    <div id="admin-panel" class="hidden-admin mt-4 p-4 bg-white rounded-lg shadow-lg w-full max-w-sm">
+        <h3 class="font-bold mb-2">دخول لوحة التحكم</h3>
+        <input type="password" id="admin-pass" placeholder="كلمة المرور" class="w-full p-2 border rounded-lg mb-2">
+        <div class="flex gap-2">
+            <button onclick="checkAdmin()" class="bg-yellow-600 text-white px-4 py-2 rounded-lg">دخول</button>
+            <button onclick="document.getElementById('admin-panel').classList.add('hidden-admin')" class="bg-gray-200 px-4 py-2 rounded-lg">إغلاق</button>
+        </div>
+        <div id="stats" class="mt-4 text-right hidden">
+            <p>إجمالي الحضور: <span id="stat-attending">0</span></p>
         </div>
     </div>
 
     <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzEsSLKxLLX6JAtVqYPqtJ4p2xOMKw0d1_I7a5tgsJ1ZSPWwo5G9ffSxEjOugQA0tc/exec";
+        const GOOGLE_SCRIPT_URL = "Yhttps://script.google.com/macros/s/AKfycbzEsSLKxLLX6JAtVqYPqtJ4p2xOMKw0d1_I7a5tgsJ1ZSPWwo5G9ffSxEjOugQA0tc/exec";
 
-        async function handleRSVP(e) {
-            e.preventDefault();
-            const data = {
-                type: 'rsvp',
-                name: document.getElementById('guest-name').value,
-                attendance: document.getElementById('attendance').value,
-                guests: document.getElementById('guests-count').value || 0,
-                date: new Date().toLocaleString()
-            };
-            try {
-                await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
-                alert("تم إرسال ردك بنجاح!");
-            } catch (err) { alert("حدث خطأ"); }
-        }
-
-        function showAdminLogin() { document.getElementById('admin-overlay').classList.remove('hidden'); }
-        function closeAdmin() { document.getElementById('admin-overlay').classList.add('hidden'); }
-        
         async function checkAdmin() {
             const pass = document.getElementById('admin-pass').value;
             if(pass === "1234") {
                 const response = await fetch(GOOGLE_SCRIPT_URL + "?action=getStats");
                 const data = await response.json();
                 document.getElementById('stat-attending').innerText = data.attending;
-                document.getElementById('stat-declining').innerText = data.declining;
-                document.getElementById('stat-guests').innerText = data.guests;
-                document.getElementById('admin-dashboard').classList.remove('hidden');
+                document.getElementById('stats').classList.remove('hidden');
             } else {
-                alert("كلمة مرور خاطئة!");
+                alert("كلمة مرور خاطئة");
             }
         }
     </script>
