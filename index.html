@@ -308,6 +308,15 @@
             </section>
 
         </div>
+        <!-- قسم الإدارة المخفي -->
+<div id="admin-panel" class="hidden fixed inset-0 bg-white/95 z-50 p-6 overflow-y-auto">
+    <button onclick="document.getElementById('admin-panel').classList.add('hidden')" class="mb-4 text-red-500 font-bold">إغلاق</button>
+    <h2 class="text-xl font-bold mb-4">لوحة تحكم العروسين</h2>
+    <div id="admin-data" class="text-xs text-right whitespace-pre-wrap">جاري تحميل البيانات...</div>
+</div>
+
+<!-- زر صغير جداً في آخر الصفحة لفتح اللوحة -->
+<button onclick="openAdmin()" class="fixed bottom-2 left-2 opacity-10 text-[10px]">Settings</button>
     </main>
 
     <!-- Script Logic -->
@@ -558,7 +567,24 @@
                 document.body.removeChild(link);
             }
         }
+async function openAdmin() {
+    const password = prompt("أدخلي كلمة السر الخاصة بك:");
+    if (password === "91") { // غيِّري 1234 لأي كلمة سر تريدينها
+        document.getElementById('admin-panel').classList.remove('hidden');
+        await loadData();
+    } else {
+        alert("كلمة السر خاطئة!");
+    }
+}
 
+async function loadData() {
+    // هذا الرابط يجب أن يكون رابط "نشر" الـ Web App الخاص بك، 
+    // ولكن بتعديل بسيط لنقرأ البيانات بدلاً من كتابتها
+    const URL = "https://script.google.com/macros/s/AKfycbwRnAVGQa54hoWbJVJfyNGnqaeyTA3ra91T_IYtH5T1g7HCT1DU48c3oYYYo4vUxjM8/exec"; 
+    const response = await fetch(URL + "?read=true"); 
+    const data = await response.json();
+    document.getElementById('admin-data').innerText = JSON.stringify(data, null, 2);
+}
         window.onload = function() {
             createPetals();
             setInterval(updateCountdown, 1000);
