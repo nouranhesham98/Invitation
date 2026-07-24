@@ -1,25 +1,48 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دعوة زفاف - Mostafa & Nouran</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
-    
+</section>
+
+            <!-- Admin Access Button (Hidden in Footer) -->
+            <footer class="text-center py-6">
+                <button onclick="showAdminLogin()" class="text-[10px] text-gray-400 hover:text-gold-600 transition">
+                    <i class="fa-solid fa-lock"></i> لوحة تحكم العروسين
+                </button>
+            </footer>
+        </div>
+    </main>
+
+    <!-- Admin Overlay -->
+    <div id="admin-overlay" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white p-6 rounded-2xl w-full max-w-sm text-center">
+            <h3 class="font-bold text-darkGreen mb-4">دخول لوحة التحكم</h3>
+            <input type="password" id="admin-pass" placeholder="كلمة المرور" class="w-full px-3 py-2 border rounded-lg mb-4 text-center">
+            <div class="flex gap-2">
+                <button onclick="closeAdmin()" class="flex-1 py-2 bg-gray-200 rounded-lg">إغلاق</button>
+                <button onclick="checkAdmin()" class="flex-1 py-2 bg-gold-600 text-white rounded-lg">دخول</button>
+            </div>
+            <div id="admin-dashboard" class="hidden mt-6 space-y-4 text-right">
+                <div class="bg-gray-50 p-3 rounded-lg"><span class="font-bold">إجمالي الحضور:</span> <span id="stat-attending">0</span></div>
+                <div class="bg-gray-50 p-3 rounded-lg"><span class="font-bold">إجمالي المعتذرين:</span> <span id="stat-declining">0</span></div>
+                <div class="bg-gray-50 p-3 rounded-lg"><span class="font-bold">عدد المرافقين المتوقع:</span> <span id="stat-guests">0</span></div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        gold: { 100: '#fcf8ec', 300: '#e5d1a5', 500: '#b89753', 600: '#9b7b3c', 700: '#765d2a' },
-                        sage: { 50: '#f4f6f3', 100: '#e2e8df', 600: '#5c7356' },
-                        cream: '#f9f6f0',
-                        darkGreen: '#2d382b'
-                    },
-                    fontFamily: { arabic: ['Cairo', 'sans-serif'], classic: ['Amiri', 'serif'], script: ['Alex Brush', 'cursive'] }
-                }
+        
+        function showAdminLogin() { document.getElementById('admin-overlay').classList.remove('hidden'); }
+        function closeAdmin() { document.getElementById('admin-overlay').classList.add('hidden'); }
+        
+        async function checkAdmin() {
+            const pass = document.getElementById('admin-pass').value;
+            if(pass === "1234") { // يمكنك تغيير كلمة المرور هنا
+                document.getElementById('admin-dashboard').classList.remove('hidden');
+                // جلب البيانات
+                const response = await fetch(GOOGLE_SCRIPT_URL + "?action=getStats");
+                const data = await response.json();
+                document.getElementById('stat-attending').innerText = data.attending;
+                document.getElementById('stat-declining').innerText = data.declining;
+                document.getElementById('stat-guests').innerText = data.guests;
+            } else {
+                alert("كلمة مرور خاطئة!");
             }
         }
     </script>
@@ -51,7 +74,7 @@
     </main>
 
     <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwRnAVGQa54hoWbJVJfyNGnqaeyTA3ra91T_IYtH5T1g7HCT1DU48c3oYYYo4vUxjM8/exec";
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzEsSLKxLLX6JAtVqYPqtJ4p2xOMKw0d1_I7a5tgsJ1ZSPWwo5G9ffSxEjOugQA0tc/exec";
 
         async function handleRSVP(e) {
             e.preventDefault();
