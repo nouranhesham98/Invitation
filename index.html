@@ -169,22 +169,27 @@
                 .subscribe();
         }
 
-        window.saveDataToCloud = async function(data) {
-            try {
-                const { error } = await supabaseClient
-                    .from('wishes')
-                    .insert([data]);
+        window.saveDataToCloud = async function(record) {
 
-                if (error) {
-                    console.error("Error inserting data:", error);
-                    return false;
-                }
-                return true;
-            } catch (e) {
-                console.error("Error writing document:", e);
-                return false;
-            }
-        };
+    const row = {
+        guest_name: record.guestName,
+        type: record.type,
+        message: record.message ?? null,
+        audio_url: record.audioData ?? null
+    };
+
+    console.log(row);
+
+    const { data, error } = await supabaseClient
+        .from("wishes")
+        .insert([row])
+        .select();
+
+    console.log(data);
+    console.log(error);
+
+    return !error;
+}
 
         window.deleteCloudRecord = async function(docId) {
             try {
@@ -799,7 +804,7 @@
             document.getElementById('stat-voice-wishes').innerText = voiceWishesCount;
 
             const filtered = wishes.filter(item => {
-                const matchName = (item.guestName || "").toLowerCase().includes(searchVal);
+                const matchName = (item.guest_name || "").toLowerCase().includes(searchVal);
                 if (!matchName) return false;
 
                 if (currentFilter === 'text') return item.type === 'text_wish';
@@ -825,7 +830,7 @@
                     content = `
                         <div class="w-full">
                             <div class="flex items-center gap-2">
-                                <span class="font-bold text-sm text-gray-800">${item.guestName}</span>
+                                <span class="font-bold text-sm text-gray-800">${item.guest_name}</span>
                                 <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-gold-100 text-gold-700">رسالة مكتوبة 📝</span>
                                 <span class="text-[10px] text-gray-400 mr-auto">${dateStr}</span>
                             </div>
@@ -836,11 +841,11 @@
                     content = `
                         <div class="w-full">
                             <div class="flex items-center gap-2 mb-2">
-                                <span class="font-bold text-sm text-gray-800">${item.guestName}</span>
+                                <span class="font-bold text-sm text-gray-800">${item.guest_name}</span>
                                 <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sage-100 text-sage-700">رسالة صوتية 🎙️</span>
                                 <span class="text-[10px] text-gray-400 mr-auto">${dateStr}</span>
                             </div>
-                            <audio controls src="${item.audioData}" class="w-full h-8"></audio>
+                            <audio controls src="${item.audio_url}" class="w-full h-8"></audio>
                         </div>
                     `;
                 }
@@ -888,7 +893,7 @@
             let csvContent = "\uFEFFالاسم,النوع,الرسالة,التاريخ\n";
 
             wishes.forEach(item => {
-                const name = `"${item.guestName || ''}"`;
+                const name = `"${item.guest_name || ''}"`;
                 let type = "مكتوب";
                 let detail = "";
 
