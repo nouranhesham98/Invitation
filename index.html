@@ -391,7 +391,7 @@
                 <i class="fa-solid fa-lock"></i>
             </div>
             <h3 class="font-bold text-lg text-darkGreen mb-1">لوحة تحكم العروسين</h3>
-            <p class="text-xs text-gray-500 mb-4">أدخل رمز الدخول PIN للاطلاع على التهاني (الافتراضي: 1234)</p>
+            <p class="text-xs text-gray-500 mb-4">أدخل رمز الدخول PIN للاطلاع على التهاني </p>
             
             <form onsubmit="verifyAdminPIN(event)" class="space-y-3">
                 <input type="password" id="admin-pin-input" placeholder="أدخل رمز PIN " required class="w-full text-center px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-gold-600 text-base font-bold tracking-widest bg-gray-50">
@@ -756,7 +756,7 @@
         function verifyAdminPIN(e) {
             e.preventDefault();
             const pin = document.getElementById('admin-pin-input').value;
-            if (pin === '1234') { // Admin Passcode
+            if (pin === '91') { // Admin Passcode
                 window.isAdminUnlocked = true;
                 closeAdminPinModal();
                 document.getElementById('admin-dashboard').classList.remove('hidden');
