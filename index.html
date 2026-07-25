@@ -424,7 +424,7 @@
             <p class="text-xs text-gray-500 mb-4">أدخل رمز الدخول PIN للاطلاع على ردود الضيوف</p>
             
             <form onsubmit="verifyAdminPIN(event)" class="space-y-3">
-                <input type="password" id="admin-pin-input" placeholder="أدخل رمز PIN (مثال: 2026)" required class="w-full text-center px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-gold-600 text-base font-bold tracking-widest bg-gray-50">
+                <input type="password" id="admin-pin-input" placeholder="أدخل رمز PIN " required class="w-full text-center px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-gold-600 text-base font-bold tracking-widest bg-gray-50">
                 <div id="pin-error" class="text-xs text-red-500 font-semibold hidden">رمز PIN غير صحيح! حاول مرة أخرى.</div>
                 <button type="submit" class="w-full py-2.5 bg-darkGreen text-white font-bold rounded-lg hover:bg-darkGreen/90 text-xs shadow-sm transition">
                     دخول اللوحة
@@ -814,7 +814,7 @@
             e.preventDefault();
             const inputPin = document.getElementById('admin-pin-input').value.trim();
             // PIN password default "2026"
-            if (inputPin === "2026" || inputPin === "1234") {
+            if (inputPin === "91" || inputPin === "1234") {
                 window.isAdminUnlocked = true;
                 closeAdminPinModal();
                 document.getElementById('admin-dashboard').classList.remove('hidden');
