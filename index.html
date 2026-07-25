@@ -13,14 +13,14 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+    const firebaseConfig = {
       apiKey: "demo-key",
-      authDomain: "demo.firebaseapp.com",
+      authDomain: "demo-project.firebaseapp.com",
       projectId: "demo-project",
-      storageBucket: "demo.appspot.com",
+      storageBucket: "demo-project.appspot.com",
       messagingSenderId: "123456",
       appId: "1:123456:web:123456"
     };
@@ -28,69 +28,31 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'mostafa-nouran-wedding';
 
     window.db = db;
-    window.appId = appId;
     window.auth = auth;
 
-    async function initAuth() {
-      try {
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-          await signInWithCustomToken(auth, __initial_auth_token);
-        } else {
-          await signInAnonymously(auth);
-        }
-      } catch (err) {
-        console.error("Auth Exception:", err);
-      }
-    }
-
-    initAuth();
+    signInAnonymously(auth);
 
     onAuthStateChanged(auth, (user) => {
-      window.currentUser = user;
       if (user) {
+        window.currentUser = user;
         listenToCloudData();
       }
     });
 
     function listenToCloudData() {
-      if (!window.currentUser) return;
-      const publicCol = collection(db, 'artifacts', appId, 'public', 'data', 'wishes');
-      
-      onSnapshot(publicCol, (snapshot) => {
+      const q = query(collection(db, 'wishes'), orderBy('timestamp', 'desc'));
+      onSnapshot(q, (snapshot) => {
         const wishes = [];
-        snapshot.forEach((doc) => {
-          wishes.push({ id: doc.id, ...doc.data() });
-        });
-        wishes.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        snapshot.forEach((doc) => wishes.push({ id: doc.id, ...doc.data() }));
         window.cloudWishes = wishes;
-
-        if (window.isAdminViewOpen) {
-          window.renderAdminData();
-        }
-      }, (error) => {
-        console.error("Firestore error:", error);
+        if (window.isAdminViewOpen) window.renderAdminData();
       });
     }
 
     window.saveToCloud = async function(data) {
-      if (!window.currentUser) {
-        await initAuth();
-      }
-      try {
-        const publicCol = collection(db, 'artifacts', appId, 'public', 'data', 'wishes');
-        await addDoc(publicCol, {
-          ...data,
-          timestamp: Date.now(),
-          dateStr: new Date().toLocaleDateString('ar-EG') + ' ' + new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
-        });
-        return true;
-      } catch (err) {
-        console.error("Cloud Save Exception:", err);
-        return false;
-      }
+      await addDoc(collection(db, 'wishes'), { ...data, timestamp: Date.now() });
     };
   </script>
 
@@ -98,103 +60,51 @@
     .font-serif-ar { font-family: 'Amiri', serif; }
     .font-sans-ar { font-family: 'Cairo', sans-serif; }
     .font-alex { font-family: 'Alex Brush', cursive; }
-    .font-playfair { font-family: 'Playfair Display', serif; }
-
-    .animate-pulse-gentle { animation: pulse-gentle 3s infinite ease-in-out; }
-    @keyframes pulse-gentle { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
-    .wax-seal { box-shadow: 0 8px 25px rgba(0,0,0,0.35), inset 0 2px 4px rgba(255,255,255,0.4); }
-    .glass-card { background: rgba(255, 255, 255, 0.93); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(197, 160, 89, 0.3); }
+    .wax-seal { box-shadow: 0 8px 25px rgba(0,0,0,0.35); }
+    .glass-card { background: rgba(255, 255, 255, 0.93); backdrop-filter: blur(14px); }
     .no-scrollbar::-webkit-scrollbar { display: none; }
   </style>
 </head>
-<body class="bg-[#18231F] text-[#2C3E35] font-sans-ar min-h-screen flex justify-center items-center p-0 md:p-4 overflow-x-hidden select-none">
+<body class="bg-[#18231F] text-[#2C3E35] font-sans-ar min-h-screen flex justify-center items-center p-0 md:p-4">
 
-  <div class="w-full max-w-md h-screen md:h-[844px] bg-[#FAF7F2] relative shadow-2xl md:rounded-[40px] overflow-hidden flex flex-col justify-between border-0 md:border-[8px] border-[#24332C] no-scrollbar">
-
-    <!-- INTRO ENVELOPE -->
-    <div id="envelopeCover" class="absolute inset-0 z-50 bg-[#F4EFEA] flex flex-col justify-between items-center py-8 px-6 text-center transition-all duration-1000 ease-in-out h-full overflow-hidden">
-      <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#C5A059_1.5px,transparent_1.5px)] [background-size:20px_20px]"></div>
-      <div class="relative z-10 pt-4">
-        <p class="text-[11px] tracking-[0.2em] text-[#8B6508] uppercase font-bold">WE'RE GETTING MARRIED</p>
-        <h2 class="font-alex text-5xl text-[#2C3E35] mt-1">Mostafa & Nouran</h2>
-      </div>
-      <div class="relative z-10 flex flex-col items-center justify-center my-auto w-full">
-        <div class="w-72 h-80 bg-[#EFE8DF] border-2 border-[#D4AF37]/40 rounded-2xl p-4 shadow-xl flex flex-col justify-between items-center relative overflow-hidden">
-          <div class="absolute top-0 left-0 right-0 h-36 bg-[#E5DCD0] border-b border-[#D4AF37]/30 clip-path-polygon flex justify-center items-end pb-2 shadow-sm"></div>
-          <div class="w-full h-full rounded-xl bg-gradient-to-b from-[#FAF7F2] to-[#E3EFE9] p-4 flex flex-col justify-center items-center relative z-10 border border-[#D4AF37]/20">
-            <div class="w-20 h-20 rounded-full border border-dashed border-[#B8860B]/60 flex items-center justify-center mb-3 animate-pulse-gentle bg-white/60">
-              <span class="font-alex text-3xl text-[#B8860B]">M & N</span>
-            </div>
-            <p class="font-serif-ar text-base text-[#2C3E35] font-bold leading-relaxed">" بَارَكَ اللَّهُ لَكُمَا وَبَارَكَ عَلَيْكُمَا <br> وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ "</p>
-            <p class="text-[10px] text-[#5C7065] mt-2 font-bold tracking-widest uppercase">Katameya Gardens</p>
-          </div>
-          <button onclick="openInvitation()" class="absolute bottom-6 z-20 group focus:outline-none cursor-pointer">
-            <div class="w-20 h-20 rounded-full bg-gradient-to-br from-[#A88B42] via-[#D4AF37] to-[#7A6126] wax-seal flex items-center justify-center transform group-hover:scale-110 active:scale-95 transition-all duration-300">
-              <div class="w-16 h-16 rounded-full border border-[#FFF8DC]/60 flex items-center justify-center bg-[#8B6508]/20">
-                <span class="font-alex text-2xl text-white">M&N</span>
-              </div>
-            </div>
-          </button>
-        </div>
-        <p class="text-xs text-[#8B6508] font-bold mt-6 tracking-wider bg-white/80 px-4 py-1.5 rounded-full border border-[#D4AF37]/30 shadow-sm">
-          إضغطِ على الختم الشمعي لفتح الدعوة ✉️
-        </p>
-      </div>
-      <div class="relative z-10 pb-2">
-        <p class="text-xs text-[#5C7065] font-bold tracking-widest uppercase">04 . 09 . 2026</p>
-      </div>
+  <div class="w-full max-w-md h-screen md:h-[844px] bg-[#FAF7F2] relative shadow-2xl md:rounded-[40px] overflow-hidden flex flex-col border-[8px] border-[#24332C]">
+    
+    <!-- ENVELOPE -->
+    <div id="envelopeCover" class="absolute inset-0 z-50 bg-[#F4EFEA] flex flex-col items-center justify-center p-6">
+      <h2 class="font-alex text-5xl text-[#2C3E35]">Mostafa & Nouran</h2>
+      <button onclick="document.getElementById('envelopeCover').classList.add('hidden')" class="mt-10 w-24 h-24 rounded-full bg-[#D4AF37] wax-seal flex items-center justify-center text-white font-alex text-2xl">
+        فتح
+      </button>
     </div>
 
-    <!-- MAIN CONTENT -->
-    <div id="mainContent" class="flex-1 overflow-y-auto no-scrollbar pt-8 pb-12 px-4 opacity-0 transition-opacity duration-1000 space-y-8 h-full">
-      <!-- ... (Rest of your invitation sections go here) ... -->
-      <div class="text-center pt-2 pb-4 text-xs text-[#6B7C73] space-y-1 relative">
-        <button onclick="promptAdminLogin()" class="absolute bottom-0 right-0 p-2 opacity-20 hover:opacity-100 transition-opacity text-[#2C3E35]">
-          <i data-lucide="lock" class="w-3.5 h-3.5"></i>
-        </button>
+    <!-- CONTENT -->
+    <div class="flex-1 overflow-y-auto p-6 space-y-6">
+      <h1 class="text-3xl font-alex text-center">دعوة زفاف</h1>
+      <p class="text-center font-serif-ar">يسعدنا حضوركم في حفل زفافنا</p>
+      
+      <div id="adminArea" class="mt-10 border-t pt-4">
+         <button onclick="promptAdminLogin()" class="text-xs text-gray-400">لوحة التحكم</button>
       </div>
     </div>
   </div>
 
   <!-- ADMIN MODAL -->
-  <div id="adminModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] hidden flex items-center justify-center p-3 md:p-4">
-    <div class="bg-[#FAF8F5] w-full max-w-md md:max-w-lg rounded-3xl p-5 border-2 border-[#C5A059] shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
-      <div class="flex justify-between items-center border-b border-[#C5A059]/30 pb-3">
-        <h3 class="font-bold text-sm text-[#18231F]">لوحة تحكم العروسين</h3>
-        <button onclick="closeAdminModal()" class="text-gray-400 hover:text-red-500 p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
-      </div>
-      <div id="adminLoginForm" class="py-6 text-center">
-        <input type="password" id="adminPassword" placeholder="كلمة المرور (2026)" class="w-full text-center p-3 rounded-xl border border-[#C5A059] mb-4">
-        <button onclick="verifyAdmin()" class="w-full bg-[#24332C] text-[#E8DCC4] py-3 rounded-xl font-bold">فتح لوحة التحكم 🔓</button>
-      </div>
-      <div id="adminDataView" class="hidden flex-1 overflow-y-auto no-scrollbar space-y-4">
-        <div class="grid grid-cols-4 gap-2 text-center">
-          <div class="bg-white p-2 rounded-lg border border-[#C5A059]/30">
-            <span id="statAttending" class="block font-bold text-emerald-700">0</span>
-            <span class="text-[9px]">حضور</span>
-          </div>
-          <!-- More stats here -->
-        </div>
-        <div id="adminMessagesList" class="space-y-2"></div>
-      </div>
+  <div id="adminModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4">
+    <div class="bg-white p-6 rounded-2xl w-full max-w-sm">
+      <input type="password" id="adminPassword" placeholder="كلمة المرور" class="w-full p-2 border rounded mb-4">
+      <button onclick="verifyAdmin()" class="w-full bg-[#24332C] text-white p-2 rounded">دخول</button>
     </div>
   </div>
 
   <script>
     function promptAdminLogin() { document.getElementById('adminModal').classList.remove('hidden'); }
-    function closeAdminModal() { document.getElementById('adminModal').classList.add('hidden'); window.isAdminViewOpen = false; }
     function verifyAdmin() {
-      const pass = document.getElementById('adminPassword').value;
-      if (pass === '2026') {
-        document.getElementById('adminLoginForm').classList.add('hidden');
-        document.getElementById('adminDataView').classList.remove('hidden');
+      if (document.getElementById('adminPassword').value === '2026') {
+        document.getElementById('adminModal').classList.add('hidden');
         window.isAdminViewOpen = true;
-        window.renderAdminData();
-      } else alert('كلمة مرور خاطئة');
+        alert('مرحباً بك في لوحة التحكم');
+      }
     }
-    
-    // ... Add your RSVP logic, Audio Recording logic, and renderAdminData function ...
-    lucide.createIcons();
   </script>
 </body>
 </html>
